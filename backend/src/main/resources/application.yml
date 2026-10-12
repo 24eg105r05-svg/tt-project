@@ -1,0 +1,41 @@
+server:
+  port: ${PORT:8080}
+
+spring:
+  application:
+    name: cems-backend
+  datasource:
+    # Connected to Aiven MySQL cloud database
+    url: ${CEMS_DB_URL:jdbc:mysql://mysql-24427e6c-anurag-7a46.a.aivencloud.com:23643/defaultdb?sslMode=REQUIRED}
+    username: ${CEMS_DB_USER:avnadmin}
+    password: ${CEMS_DB_PASSWORD:}
+    driver-class-name: com.mysql.cj.jdbc.Driver
+  jpa:
+    open-in-view: false
+    hibernate:
+      ddl-auto: ${CEMS_DDL_AUTO:update}
+    properties:
+      hibernate:
+        dialect: org.hibernate.dialect.MySQLDialect
+
+management:
+  endpoints:
+    web:
+      exposure:
+        include: health
+
+cems:
+  jwt:
+    # MUST be overridden in production (>= 32 bytes): export CEMS_JWT_SECRET=...
+    secret: ${CEMS_JWT_SECRET:dev-only-secret-please-change-me-in-production-0123456789}
+    expiration-minutes: ${CEMS_JWT_EXPIRATION_MINUTES:480}
+  cors:
+    allowed-origins: ${CEMS_CORS_ORIGINS:*}
+  seed:
+    # Creates demo users/venues/events on an empty database. Set false in production.
+    enabled: ${CEMS_SEED:true}
+    demo-password: ${CEMS_DEMO_PASSWORD:cems@123}
+
+springdoc:
+  swagger-ui:
+    path: /swagger-ui.html

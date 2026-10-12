@@ -1,0 +1,46 @@
+services:
+  # -------------------------------------------------------------
+  # CEMS Spring Boot Backend (Docker Web Service)
+  # -------------------------------------------------------------
+  - type: web
+    name: cems-backend
+    runtime: docker
+    dockerfilePath: ./backend/Dockerfile
+    dockerContext: ./backend
+    plan: free
+    healthCheckPath: /actuator/health
+    envVars:
+      - key: CEMS_DB_URL
+        value: jdbc:mysql://mysql-24427e6c-anurag-7a46.a.aivencloud.com:23643/defaultdb?sslMode=REQUIRED
+      - key: CEMS_DB_USER
+        value: avnadmin
+      - key: CEMS_DB_PASSWORD
+        sync: false
+      - key: CEMS_JWT_SECRET
+        generateValue: true
+      - key: CEMS_CORS_ORIGINS
+        value: '*'
+      - key: CEMS_SEED
+        value: 'true'
+
+  # -------------------------------------------------------------
+  # CEMS React Frontend (Static Site with global CDN)
+  # -------------------------------------------------------------
+  - type: web
+    name: cems-frontend
+    runtime: static
+    rootDir: frontend
+    buildCommand: npm install && npm run build
+    staticPublishPath: dist
+    routes:
+      - type: rewrite
+        source: /*
+        destination: /index.html
+    envVars:
+      - key: VITE_DEMO_MODE
+        value: 'true'
+      - key: VITE_API_URL
+        fromService:
+          type: web
+          name: cems-backend
+          property: host

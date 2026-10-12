@@ -1,0 +1,47 @@
+# One command: docker compose up --build
+#   UI      -> http://localhost:3000
+#   API     -> http://localhost:8080  (Swagger: /swagger-ui.html)
+services:
+  mysql:
+    image: mysql:8.4
+    environment:
+      MYSQL_DATABASE: cems
+      MYSQL_USER: cems
+      MYSQL_PASSWORD: ${MYSQL_PASSWORD:-cems_pass}
+      MYSQL_ROOT_PASSWORD: ${MYSQL_ROOT_PASSWORD:-root_pass}
+    volumes:
+      - mysql-data:/var/lib/mysql
+    healthcheck:
+      test: ["CMD", "mysqladmin", "ping", "-h", "localhost", "-u", "root", "-p${MYSQL_ROOT_PASSWORD:-root_pass}"]
+      interval: 5s
+      timeout: 5s
+      retries: 20
+
+  backend:
+    build: ./backend
+    depends_on:
+      mysql:
+        condition: service_healthy
+    environment:
+      CEMS_DB_URL: jdbc:mysql://mysql:3306/cems?useSSL=false&allowPublicKeyRetrieval=true&serverTimezone=UTC
+      CEMS_DB_USER: cems
+      CEMS_DB_PASSWORD: ${MYSQL_PASSWORD:-cems_pass}
+      # Change this! Must be at least 32 characters.
+      CEMS_JWT_SECRET: ${CEMS_JWT_SECRET:-change-me-change-me-change-me-change-me}
+      CEMS_CORS_ORIGINS: http://localhost:3000
+      CEMS_SEED: ${CEMS_SEED:-true}
+    ports:
+      - "8080:8080"
+
+  frontend:
+    build:
+      context: ./frontend
+      args:
+        VITE_DEMO_MODE: ${VITE_DEMO_MODE:-true}
+    depends_on:
+      - backend
+    ports:
+      - "3000:80"
+
+volumes:
+  mysql-data:
