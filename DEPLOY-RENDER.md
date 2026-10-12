@@ -44,9 +44,8 @@ If you prefer to configure each service manually in Render's dashboard:
 3. Configure the service:
    - **Name:** `cems-backend`
    - **Language / Runtime:** `Docker`
-   - **Root Directory:** leave blank (or `backend`)
-   - **Dockerfile Path:** `./backend/Dockerfile`
-   - **Docker Context:** `./backend`
+   - **Root Directory:** leave blank (default)
+   - **Dockerfile Path:** `./Dockerfile` (or `./backend/Dockerfile`)
    - **Instance Type:** `Free`
    - **Health Check Path:** `/actuator/health`
 4. In **Environment Variables**, add:

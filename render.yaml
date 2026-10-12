@@ -5,8 +5,7 @@ services:
   - type: web
     name: cems-backend
     runtime: docker
-    dockerfilePath: ./backend/Dockerfile
-    dockerContext: ./backend
+    dockerfilePath: ./Dockerfile
     plan: free
     healthCheckPath: /actuator/health
     envVars:

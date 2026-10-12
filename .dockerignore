@@ -1,0 +1,8 @@
+target
+data
+.idea
+.git
+frontend/node_modules
+frontend/dist
+node_modules
+dist
