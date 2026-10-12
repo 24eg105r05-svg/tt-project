@@ -7,7 +7,7 @@ spring:
     name: cems-backend
   datasource:
     # Connected to Aiven MySQL cloud database
-    url: ${CEMS_DB_URL:jdbc:mysql://mysql-24427e6c-anurag-7a46.a.aivencloud.com:23643/defaultdb?sslMode=REQUIRED}
+    url: ${CEMS_DB_URL:jdbc:mysql://mysql-24427e6c-anurag-7a46.a.aivencloud.com:23643/defaultdb?sslMode=REQUIRED&sessionVariables=sql_require_primary_key=OFF}
     username: ${CEMS_DB_USER:avnadmin}
     password: ${CEMS_DB_PASSWORD:}
     driver-class-name: com.mysql.cj.jdbc.Driver

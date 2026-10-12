@@ -14,7 +14,7 @@ Your Aiven Cloud MySQL credentials have been integrated into `backend/src/main/r
 - **User:** `avnadmin`
 - **Password:** `<YOUR_AIVEN_DB_PASSWORD>` (from your Aiven Console)
 - **SSL Mode:** `REQUIRED`
-- **JDBC URL:** `jdbc:mysql://mysql-24427e6c-anurag-7a46.a.aivencloud.com:23643/defaultdb?sslMode=REQUIRED`
+- **JDBC URL:** `jdbc:mysql://mysql-24427e6c-anurag-7a46.a.aivencloud.com:23643/defaultdb?sslMode=REQUIRED&sessionVariables=sql_require_primary_key=OFF`
 
 ---
 
@@ -49,7 +49,7 @@ If you prefer to configure each service manually in Render's dashboard:
    - **Instance Type:** `Free`
    - **Health Check Path:** `/actuator/health`
 4. In **Environment Variables**, add:
-   - `CEMS_DB_URL`: `jdbc:mysql://mysql-24427e6c-anurag-7a46.a.aivencloud.com:23643/defaultdb?sslMode=REQUIRED`
+   - `CEMS_DB_URL`: `jdbc:mysql://mysql-24427e6c-anurag-7a46.a.aivencloud.com:23643/defaultdb?sslMode=REQUIRED&sessionVariables=sql_require_primary_key=OFF`
    - `CEMS_DB_USER`: `avnadmin`
    - `CEMS_DB_PASSWORD`: `<your Aiven password>`
    - `CEMS_JWT_SECRET`: *(Click 'Generate' or enter 32+ characters)*

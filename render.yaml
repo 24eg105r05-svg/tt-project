@@ -10,7 +10,7 @@ services:
     healthCheckPath: /actuator/health
     envVars:
       - key: CEMS_DB_URL
-        value: jdbc:mysql://mysql-24427e6c-anurag-7a46.a.aivencloud.com:23643/defaultdb?sslMode=REQUIRED
+        value: jdbc:mysql://mysql-24427e6c-anurag-7a46.a.aivencloud.com:23643/defaultdb?sslMode=REQUIRED&sessionVariables=sql_require_primary_key=OFF
       - key: CEMS_DB_USER
         value: avnadmin
       - key: CEMS_DB_PASSWORD
