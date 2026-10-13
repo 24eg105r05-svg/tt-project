@@ -1,9 +1,15 @@
 // Dev: Vite proxies /api -> http://localhost:8080 (see vite.config.js).
 // Prod: nginx proxies /api -> backend, or set VITE_API_URL to an absolute URL.
 let rawBase = (import.meta.env.VITE_API_URL || '/api').trim();
-if (rawBase && !rawBase.startsWith('/') && !rawBase.startsWith('http')) {
+
+// If Render Blueprint set an internal service hostname without a TLD (e.g. "cems-backend"),
+// append .onrender.com so browser can reach it publicly
+if (rawBase && !rawBase.startsWith('/') && !rawBase.includes('.')) {
+  rawBase = `https://${rawBase.replace(/^https?:\/\//, '')}.onrender.com`;
+} else if (rawBase && !rawBase.startsWith('/') && !rawBase.startsWith('http')) {
   rawBase = `https://${rawBase}`;
 }
+
 if (rawBase.startsWith('http')) {
   rawBase = rawBase.replace(/\/+$/, '');
   if (!rawBase.endsWith('/api')) {
@@ -55,8 +61,13 @@ async function request(path, { method = 'GET', body, query } = {}) {
       headers,
       body: body !== undefined ? JSON.stringify(body) : undefined,
     });
-  } catch {
-    throw new ApiError('Cannot reach the CEMS server. Is the backend running on port 8080?', 0);
+  } catch (err) {
+    const isLocal = typeof window !== 'undefined' && 
+      (window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1');
+    const msg = isLocal
+      ? 'Cannot reach the CEMS server. Is the backend running on port 8080?'
+      : `Cannot reach backend at ${url}. Please check if cems-backend is "Live" in Render.`;
+    throw new ApiError(msg, 0);
   }
 
   if (res.status === 204) return null;
