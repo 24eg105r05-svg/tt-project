@@ -1,6 +1,7 @@
 // Dev: Vite proxies /api -> http://localhost:8080 (see vite.config.js).
 // Prod: nginx proxies /api -> backend, or set VITE_API_URL to an absolute URL.
-let rawBase = (import.meta.env.VITE_API_URL || '/api').trim();
+const storedBase = typeof window !== 'undefined' ? localStorage.getItem('cems_api_url') : null;
+let rawBase = (storedBase || import.meta.env.VITE_API_URL || '/api').trim();
 
 // If Render Blueprint set an internal service hostname without a TLD (e.g. "cems-backend"),
 // append .onrender.com so browser can reach it publicly
@@ -18,6 +19,20 @@ if (rawBase.startsWith('http')) {
 }
 const BASE = rawBase;
 const TOKEN_KEY = 'cems_token';
+
+export const getApiUrl = () => BASE;
+export const setApiUrl = (url) => {
+  if (url && url.trim()) {
+    let clean = url.trim();
+    if (!clean.startsWith('http')) clean = `https://${clean}`;
+    clean = clean.replace(/\/+$/, '');
+    if (!clean.endsWith('/api')) clean += '/api';
+    localStorage.setItem('cems_api_url', clean);
+  } else {
+    localStorage.removeItem('cems_api_url');
+  }
+  window.location.reload();
+};
 
 export const tokenStore = {
   get: () => localStorage.getItem(TOKEN_KEY),

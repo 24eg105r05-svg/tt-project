@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
-import { Cpu, LogIn, UserPlus, Shield, User, Sparkles, AlertTriangle, Loader2 } from 'lucide-react';
+import { Cpu, LogIn, UserPlus, Shield, User, Sparkles, AlertTriangle, Loader2, Settings } from 'lucide-react';
 import { useCems, DEMO_MODE, DEMO_ACCOUNTS } from '../context/CemsContext';
+import { getApiUrl, setApiUrl } from '../api/client';
 
 export const Login = () => {
   const { signIn, signUp, authMessage } = useCems();
@@ -8,6 +9,8 @@ export const Login = () => {
   const [form, setForm] = useState({ name: '', email: '', password: '', department: '' });
   const [error, setError] = useState(null);
   const [busy, setBusy] = useState(false);
+  const [showApiConfig, setShowApiConfig] = useState(false);
+  const [customApiUrl, setCustomApiUrl] = useState(getApiUrl());
 
   const set = (field) => (e) => setForm({ ...form, [field]: e.target.value });
 
@@ -64,11 +67,54 @@ export const Login = () => {
 
         {(error || authMessage) && (
           <div style={{
-            display: 'flex', gap: '10px', alignItems: 'center', padding: '12px', borderRadius: '10px', marginBottom: '16px',
+            padding: '12px', borderRadius: '10px', marginBottom: '16px',
             background: 'rgba(255, 0, 127, 0.12)', border: '1px solid rgba(255, 0, 127, 0.4)',
             color: 'var(--pink-neon)', fontSize: '0.85rem'
           }}>
-            <AlertTriangle size={18} /> {error || authMessage}
+            <div style={{ display: 'flex', gap: '10px', alignItems: 'center' }}>
+              <AlertTriangle size={18} style={{ flexShrink: 0 }} /> 
+              <span>{error || authMessage}</span>
+            </div>
+
+            {error && error.includes('Cannot reach') && (
+              <div style={{ marginTop: '10px', borderTop: '1px solid rgba(255, 0, 127, 0.25)', paddingTop: '8px' }}>
+                <button
+                  type="button"
+                  onClick={() => setShowApiConfig(!showApiConfig)}
+                  style={{
+                    background: 'none', border: 'none', color: 'var(--cyan-neon)',
+                    cursor: 'pointer', padding: 0, fontSize: '0.78rem', display: 'flex', alignItems: 'center', gap: '5px'
+                  }}
+                >
+                  <Settings size={14} /> {showApiConfig ? 'Hide API URL Settings' : 'Set / Change Backend URL'}
+                </button>
+
+                {showApiConfig && (
+                  <div style={{ marginTop: '8px' }}>
+                    <div style={{ display: 'flex', gap: '6px' }}>
+                      <input
+                        className="glass-input"
+                        style={{ flex: 1, padding: '6px 10px', fontSize: '0.8rem', color: '#fff' }}
+                        placeholder="https://cems-backend-xxxx.onrender.com"
+                        value={customApiUrl}
+                        onChange={(e) => setCustomApiUrl(e.target.value)}
+                      />
+                      <button
+                        type="button"
+                        className="btn btn-primary"
+                        style={{ padding: '6px 12px', fontSize: '0.8rem' }}
+                        onClick={() => setApiUrl(customApiUrl)}
+                      >
+                        Save & Connect
+                      </button>
+                    </div>
+                    <p style={{ margin: '6px 0 0', fontSize: '0.72rem', color: 'var(--text-muted)' }}>
+                      Enter your live Render backend URL (e.g. from your Render dashboard).
+                    </p>
+                  </div>
+                )}
+              </div>
+            )}
           </div>
         )}
 
